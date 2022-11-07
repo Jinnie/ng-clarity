@@ -5,6 +5,7 @@
  */
 
 import {
+  AfterViewInit,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
@@ -45,7 +46,7 @@ import { WrappedColumn } from './wrapped-column';
   selector: 'clr-dg-column',
   template: `
     <div class="datagrid-column-flex">
-      <button class="datagrid-column-title" *ngIf="sortable" (click)="sort()" type="button">
+      <button class="datagrid-column-title" *ngIf="sortable" (click)="sort()" type="button" #titleRef>
         <ng-container *ngTemplateOutlet="columnTitle"></ng-container>
         <cds-icon
           *ngIf="sortDirection"
@@ -77,7 +78,7 @@ import { WrappedColumn } from './wrapped-column';
         <ng-content></ng-content>
       </ng-template>
 
-      <span class="datagrid-column-title" *ngIf="!sortable">
+      <span class="datagrid-column-title" *ngIf="!sortable" #titleRef>
         <ng-container *ngTemplateOutlet="columnTitle"></ng-container>
       </span>
 
@@ -88,21 +89,21 @@ import { WrappedColumn } from './wrapped-column';
   host: {
     '[class.datagrid-column]': 'true',
     '[attr.aria-sort]': 'ariaSort',
+    // '[attr.aria-label]': 'ariaLabel',
     role: 'columnheader',
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ClrDatagridColumn<T = any>
   extends DatagridFilterRegistrar<T, ClrDatagridFilterInterface<T>>
-  implements OnDestroy, OnInit, OnChanges
-{
+  implements OnDestroy, OnInit, AfterViewInit, OnChanges {
   constructor(
     private _sort: Sort<T>,
     filters: FiltersProvider<T>,
     private vcr: ViewContainerRef,
     private detailService: DetailService,
     private changeDetectorRef: ChangeDetectorRef,
-    public commonStrings: ClrCommonStringsService
+    public commonStrings: ClrCommonStringsService,
   ) {
     super(filters);
     this.subscriptions.push(this.listenForSortingChanges());
@@ -115,6 +116,16 @@ export class ClrDatagridColumn<T = any>
    * Subscription to the sort service changes
    */
   private subscriptions: Subscription[] = [];
+
+
+
+  // @Input('aria-label')
+  // ariaLabelInput: string;
+
+  // ariaLabel: string;
+
+  // @ViewChild('titleRef', { read: ElementRef })
+  // private columnTitleRef: ElementRef;
 
   override ngOnDestroy() {
     super.ngOnDestroy();
@@ -459,6 +470,17 @@ export class ClrDatagridColumn<T = any>
 
   ngOnInit() {
     this.wrappedInjector = new HostWrapper(WrappedColumn, this.vcr);
+  }
+
+  ngAfterViewInit() {
+    // requestAnimationFrame(() => {
+    //   if (this.ariaLabelInput) {
+    //     this.ariaLabel = this.ariaLabelInput;
+    //   } else {
+    //     const columnText = this.columnTitleRef.nativeElement.textContent;
+    //     this.ariaLabel = columnText;
+    //   }
+    // });
   }
 
   public get _view() {
