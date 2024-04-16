@@ -34,7 +34,7 @@
             *ngIf="pinnable"
             (click)="togglePinned()"
           >
-            <cds-icon [shape]="pinned ? 'unpin' : 'pin'"></cds-icon>
+            <cds-icon [attr.shape]="pinned ? 'unpin' : 'pin'"></cds-icon>
           </button>
           <div class="modal-title-wrapper" id="{{modalId}}" cdkFocusInitial tabindex="-1">
             <ng-content select=".modal-title"></ng-content>
